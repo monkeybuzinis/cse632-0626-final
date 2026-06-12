@@ -1,24 +1,63 @@
 provider "aws" {
-  region = var.region
+   region = var.region
 }
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
+data "aws_ami" "amazon_linux" {
+   most_recent = true
+   owners      = ["amazon"]
+   filter {
+     name   = "name"
+     values = ["al2023-ami-*-x86_64"]
+   }
+}
 
-  name = "cse632-vpc"
-  cidr = "10.0.0.0/16"
+resource "aws_security_group" "cse632_sg" {
+   name        = "cse632-sg"
+   description = "Allow SSH and HTTP"
 
-  azs             = ["${var.region}a", "${var.region}b"]
-  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+   ingress {
+     from_port   = 22
+     to_port     = 22
+     protocol    = "tcp"
+     cidr_blocks = ["0.0.0.0/0"]
+   }
 
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+   ingress {
+     from_port   = 80
+     to_port     = 80
+     protocol    = "tcp"
+     cidr_blocks = ["0.0.0.0/0"]
+   }
 
-  map_public_ip_on_launch = true
+   exclude_default_egress = false
+   egress {
+     from_port   = 0
+     to_port     = 0
+     protocol    = "-1"
+     cidr_blocks = ["0.0.0.0/0"]
+   }
+}
 
-  tags = {
-    Project = "cse632-0526-final"
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-  }
+resource "aws_instance" "cse632_vm" {
+   ami                    = data.aws_ami.amazon_linux.id
+   instance_type          = var.instance_type
+   key_name               = var.key_name
+   vpc_security_group_ids = [aws_security_group.cse632_sg.id]
+
+   # Automatically installs NGINX and sets up your index.html file
+   user_data = <<-INPUT_EOF
+              #!/bin/bash
+              dnf update -y
+              dnf install nginx -y
+              cat << 'HTML_EOF' > /usr/share/nginx/html/index.html
+              $(cat ../index.html)
+              HTML_EOF
+              systemctl enable nginx
+              systemctl start nginx
+              INPUT_EOF
+
+   tags = {
+     Name    = "cse632-nginx-server"
+     Project = "cse632-0626-final"
+   }
 }
