@@ -124,6 +124,18 @@ http://54.164.11.118
 
 ![Website](website.png)
 
+## How it works
+
+- Terraform creates an EC2 instance with a Security Group that opens port 22 (SSH) and port 80 (HTTP)
+- On first boot, the EC2 instance automatically runs a startup script (user_data) that:
+  1. Updates the system packages (`dnf update -y`)
+  2. Installs NGINX web server (`dnf install -y nginx`)
+  3. Starts and enables NGINX service (`systemctl start nginx`)
+  4. Disables the firewall (`systemctl stop firewalld`)
+  5. Downloads index.html from GitHub into NGINX web directory (`/usr/share/nginx/html/`)
+
+![Website](nginx.png)
+
 ## Cleanup
 
 To destroy all AWS resources:
