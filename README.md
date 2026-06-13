@@ -47,6 +47,8 @@ sudo ./aws/install
 aws --version
 ```
 
+![Terraform Apply](aws-ver.png)
+
 #### 2. Configure AWS CLI
 
 Create an IAM user in AWS Console with AdministratorAccess policy, then run:
@@ -59,6 +61,8 @@ aws configure
 # Default output format: json
 ```
 
+![Terraform Apply](aws-config.png)
+
 #### 3. Install Terraform
 
 ```bash
@@ -68,6 +72,8 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt-get update && sudo apt-get install terraform
 terraform version
 ```
+
+![Terraform Apply](terr-ver.png)
 
 #### 4. Create SSH Key Pair in AWS
 
