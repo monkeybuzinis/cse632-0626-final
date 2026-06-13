@@ -132,3 +132,6 @@ To destroy all AWS resources:
 cd terraform
 terraform destroy
 ```
+
+![Terraform Apply](terraform-destroy1.png)
+![Terraform Apply](terraform-destroy2.png)
