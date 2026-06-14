@@ -126,7 +126,7 @@ You should see `Active: active (running)`.
 ### Step 4 - Visit the website
 
 Open your browser and go to:
-(http://<public_ip>) 
+http://<public_ip>
 > **Note:** The public IP changes every time you run `terraform apply`. 
 > Use the IP shown in the Terraform output after deployment.
 
